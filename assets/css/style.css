@@ -21,15 +21,16 @@ body {
 }
 .box-img{
     border-style: solid;
-    border-color: red;
+    border-color: 0ffc3e;
     border-radius: 50%;
     width: 200px;
     height: 200px;
 }
-.box-img:hover{
+/* .box-img:hover{
     border-width: 5px;
     border-style: solid;
-    border-color: red;
+    border-color: 0ffc3e
+; */
 }
 .box h1 {
     color: #2bff00;
